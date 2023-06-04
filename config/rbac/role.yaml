@@ -1,0 +1,33 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - secretwatcher.secretwatcher.aly.com
+  resources:
+  - secretwatchers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - secretwatcher.secretwatcher.aly.com
+  resources:
+  - secretwatchers/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - secretwatcher.secretwatcher.aly.com
+  resources:
+  - secretwatchers/status
+  verbs:
+  - get
+  - patch
+  - update
