@@ -15,33 +15,34 @@ import (
 )
 
 func main() {
+	// Create a new Zap logger
+	logger := zap.New(zap.UseDevMode(true))
+
+	// Set the logger
+	ctrl.SetLogger(logger)
+	kubeconfig := flag.String("config", "", "Path to the kubeconfig file")
 	flag.Parse()
-
-	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
-
+	// Load the kubeconfig file
+	cfg, err := config.GetConfigWithContext(*kubeconfig)
+	if err != nil {
+		fmt.Printf("Failed to load kubeconfig: %v", err)
+		os.Exit(1)
+	}
 	scheme := runtime.NewScheme()
 	corev1.AddToScheme(scheme)
 	v1.AddToScheme(scheme)
 
-	kubeConfig := config.GetConfigOrDie()
-	mgr, err := ctrl.NewManager(kubeConfig, ctrl.Options{
-		Scheme:             scheme,
+	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		MetricsBindAddress: "0",
-		Port:               9443,
-		LeaderElection:     true,
-		LeaderElectionID:   "secretwatcher.aly.com",
 	})
 	if err != nil {
-		fmt.Printf("Failed to create controller manager: %v", err)
-		os.Exit(1)
+		panic(err)
 	}
-
 	err = controllers.SetupWithManager(mgr)
 	if err != nil {
 		fmt.Printf("Failed to setup controller: %v", err)
 		os.Exit(1)
 	}
-
 	err = mgr.Start(ctrl.SetupSignalHandler())
 	if err != nil {
 		fmt.Printf("Failed to start manager: %v", err)

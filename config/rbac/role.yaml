@@ -6,7 +6,15 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
-  - secretwatcher.secretwatcher.aly.com
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - secretwatcher.aly.com
   resources:
   - secretwatchers
   verbs:
@@ -17,17 +25,3 @@ rules:
   - patch
   - update
   - watch
-- apiGroups:
-  - secretwatcher.secretwatcher.aly.com
-  resources:
-  - secretwatchers/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - secretwatcher.secretwatcher.aly.com
-  resources:
-  - secretwatchers/status
-  verbs:
-  - get
-  - patch
-  - update

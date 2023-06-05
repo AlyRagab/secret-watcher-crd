@@ -1,6 +1,11 @@
 package v1
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	"github.com/rs/zerolog/log"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	runtime "k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes/scheme"
+)
 
 // SecretWatcherSpec defines the desired state of SecretWatcher
 type SecretWatcherSpec struct {
@@ -32,5 +37,19 @@ type SecretWatcherList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&SecretWatcher{}, &SecretWatcherList{})
+	err := AddToScheme(scheme.Scheme)
+	if err != nil {
+		log.Printf("Failed to add custom types to scheme: %v", err)
+	}
+}
+
+// Add custom types to the scheme
+func addKnownTypes(scheme *runtime.Scheme) error {
+	scheme.AddKnownTypes(SchemeGroupVersion,
+		&SecretWatcher{},
+		&SecretWatcherList{},
+	)
+	// Register CRD types with the Kubernetes scheme
+	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
+	return nil
 }
