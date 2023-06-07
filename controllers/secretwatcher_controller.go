@@ -60,8 +60,8 @@ func (r *SecretWatcherReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 func sendAlertToSlack(message string) error {
 	fmt.Println("Building Slack Object")
-	api := slack.New("xoxp-5079192664693-5105825226784-5356530773671-3d2e572cc24bf6828c695a15f4b2292c")
-	_, _, err := api.PostMessage("C05ATJV2F4K", slack.MsgOptionText(message, false))
+	api := slack.New(os.Getenv("SLACK_TOKEN"))
+	_, _, err := api.PostMessage(os.Getenv("SLACK_CHANNEL_ID"), slack.MsgOptionText(message, false))
 	if err != nil {
 		fmt.Printf("Failed to send Slack alert: %v\n", err)
 	}
